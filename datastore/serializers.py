@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
-from datastore.models import Service
+from datastore.models import Service, Data
 
 
 class TokenSerializer(serializers.Serializer):
@@ -47,3 +47,18 @@ class TokenSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         raise NotImplemented
+
+
+class DataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Data
+        fields = ('json_data', 'slot_name')
+
+    def create(self, validated_data):
+        token = self.context['token']
+        return self.Meta.model.objects.create(service_user_id=token, **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.json_data = validated_data['json_data']
+        instance.save()
+        return instance

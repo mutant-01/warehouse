@@ -23,8 +23,6 @@ class ServiceUser(models.Model):
     service = models.ForeignKey(Service, models.CASCADE)
     # todo HashTable index is more efficient, as equal operator may be used more frequently
     key = models.CharField("token", max_length=40, primary_key=True)
-    json_data = JSONField(null=True)
-    # todo json_data index based on read/write frequency
 
     class Meta:
         unique_together = (('user', 'service'), )
@@ -43,3 +41,13 @@ class ServiceUser(models.Model):
         service = self.service.unique_id
         d.update((random + user + service).encode())
         return d.hexdigest()
+
+
+class Data(models.Model):
+    slot_name = models.CharField(max_length=128, default='default')
+    service_user = models.ForeignKey(ServiceUser, models.CASCADE)
+    json_data = JSONField(null=True)
+    # todo json_data index based on read/write frequency
+
+    class Meta:
+        unique_together = ('slot_name', 'service_user')
