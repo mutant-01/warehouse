@@ -51,3 +51,16 @@ class Data(models.Model):
 
     class Meta:
         unique_together = ('slot_name', 'service_user')
+
+
+class DataLog(models.Model):
+    slot_name = models.CharField(max_length=128, default='default')
+    service_user = models.CharField(max_length=40)
+    json_data = JSONField(null=True)
+    type = models.CharField(max_length=10)
+    event_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['service_user'])
+        ]
